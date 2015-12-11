@@ -1,0 +1,14 @@
+{
+  "name": "bahnhofquartett",
+  "version": "0.1.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Philipp Bock <p@philippbock.de> (http://philippbock.de/)",
+  "license": "MIT",
+  "dependencies": {
+    "lodash": "^3.10.1"
+  }
+}
