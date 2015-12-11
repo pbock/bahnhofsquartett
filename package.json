@@ -9,6 +9,7 @@
   "author": "Philipp Bock <p@philippbock.de> (http://philippbock.de/)",
   "license": "MIT",
   "dependencies": {
-    "lodash": "^3.10.1"
+    "lodash": "^3.10.1",
+    "pdfkit": "^0.7.1"
   }
 }

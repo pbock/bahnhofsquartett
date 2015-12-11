@@ -4,8 +4,17 @@ const pr = require('path').resolve;
 const fs = require('fs');
 const _ = require('lodash');
 
+const makePDF = require('./lib/card-generator');
+
 const SRC_DIR = pr(__dirname, '../src');
 const DATA_DIR = pr(SRC_DIR, 'data');
+const DEST_DIR = pr(__dirname, '../dist');
+
+try {
+  fs.mkdirSync(DEST_DIR);
+} catch (e) {
+  if (e.code !== 'EEXIST') throw e;
+}
 
 let stations = JSON.parse(fs.readFileSync(pr(DATA_DIR, 'stations.json')));
 let categories = [
@@ -38,14 +47,20 @@ let potentialCards = categories.map(category => {
   return results.value();
 });
 
-while (cards.size < 36) {
+while (cards.size < 32) {
   let card = potentialCards[cards.size % potentialCards.length].shift();
   cards.add(card);
 }
 
-for (let card of cards) {
-  console.log('\n' + card.name);
+for (let station of cards) {
+  console.log(station.name);
+  let card = {
+    name: station.name,
+    values: [],
+  };
   categories.forEach(category => {
-    console.log(`${ category.name }: ${ category.find(card) }`);
+    card.values.push({ name: category.name, value: category.find(station) });
   });
+
+  makePDF(card).pipe(fs.createWriteStream(pr(DEST_DIR, card.name + '.pdf')));
 }
