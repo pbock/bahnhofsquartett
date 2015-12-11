@@ -52,10 +52,12 @@ while (cards.size < 32) {
   cards.add(card);
 }
 
+let i = 0;
 for (let station of cards) {
   console.log(station.name);
   let card = {
     name: station.name,
+    id: 'ABCDEFGH'[i / 4 | 0] + (i % 4 + 1),
     values: [],
   };
   categories.forEach(category => {
@@ -63,4 +65,5 @@ for (let station of cards) {
   });
 
   makePDF(card).pipe(fs.createWriteStream(pr(DEST_DIR, card.name + '.pdf')));
+  i++;
 }
