@@ -45,6 +45,7 @@ function drawBack(doc, pageX, pageY) {
       .lineTo($line.attr('x2'), $line.attr('y2'))
       .strokeOpacity(0.5).lineWidth(0.5).stroke(WHITE);
   });
+  doc.fontSize(8).fill(WHITE).text('v0.4', MARGIN, MARGIN);
   doc.restore();
 }
 
@@ -123,25 +124,31 @@ function makePDF(card) {
           y += LINE_HEIGHT;
         });
 
+        doc.fontSize(8);
+
         doc.lineWidth(0.5);
 
         // Draw cutting marks
-        doc.moveTo(pageX + BLEED, pageY - 4)
+        doc.moveTo(pageX + BLEED, pageY - 6)
           .lineTo(pageX + BLEED, pageY + BLEED)
-          .lineTo(pageX - 4, pageY + BLEED)
-          .stroke();
-        doc.moveTo(pageX - BLEED + WIDTH, pageY - 4)
+          .lineTo(pageX - 6, pageY + BLEED)
+          .stroke(BLACK);
+        doc.moveTo(pageX - BLEED + WIDTH, pageY - 6)
           .lineTo(pageX - BLEED + WIDTH, pageY + BLEED)
-          .lineTo(pageX + WIDTH + 4, pageY + BLEED)
+          .lineTo(pageX + WIDTH + 6, pageY + BLEED)
           .stroke();
-        doc.moveTo(pageX - BLEED + WIDTH, pageY + BLEED + HEIGHT + 4)
+        doc.moveTo(pageX - BLEED + WIDTH, pageY + BLEED + HEIGHT + 6)
           .lineTo(pageX - BLEED + WIDTH, pageY + HEIGHT)
-          .lineTo(pageX + WIDTH + 4, pageY + HEIGHT)
+          .lineTo(pageX + WIDTH + 6, pageY + HEIGHT)
           .stroke();
-        doc.moveTo(pageX + BLEED, pageY + BLEED + HEIGHT + 4)
+        doc.moveTo(pageX + BLEED, pageY + BLEED + HEIGHT + 6)
           .lineTo(pageX + BLEED, pageY + HEIGHT)
-          .lineTo(pageX - 4, pageY + HEIGHT)
+          .lineTo(pageX - 6, pageY + HEIGHT)
           .stroke();
+
+        doc.rect(pageX + BLEED, pageY + BLEED, WIDTH - 2 * BLEED, HEIGHT - 2 * BLEED + 3)
+          .lineWidth(0.25)
+          .stroke(BLACK);
 
         i++;
         if (i % 9 === 0) {

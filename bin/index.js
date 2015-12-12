@@ -39,8 +39,8 @@ let categories = [
     reverse: true,
   },
   {
-    name: 'Kategorie',
-    find: _.property('category'),
+    name: 'Bahnhofskategorie',
+    find: n => n.category,
   },
   {
     name: 'Anzahl der Aufzüge',
@@ -66,6 +66,12 @@ let categories = [
     format: n => n ? 'ja' : 'nein',
   }
   /*{
+    name: 'Höchster Aufzugschacht',
+    find: n => _(n.elevators).map(e => e.wellHeight).filter().max(),
+    format: n => (n > 0) ? n.toFixed(2).replace('.', ',') + ' m' : '—',
+    reverse: true,
+  },
+  {
     name: 'Höchster Aufzugschacht',
     find: n => _(n.elevators).map(e => +e.wellHeight).filter().max(),
     reverse: true,
