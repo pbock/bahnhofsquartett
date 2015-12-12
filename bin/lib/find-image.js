@@ -66,7 +66,7 @@ function findImage(station) {
         if (error || res.statusCode !== 200) {
           return reject(error);
         }
-        console.log('Fetched image from %s');
+        console.log('Fetched image from %s', url);
         let imageBuffer = buffer;
         fs.writeFileSync(imagePath, buffer);
         resolve({

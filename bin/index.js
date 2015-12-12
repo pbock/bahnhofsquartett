@@ -97,6 +97,9 @@ async.eachLimit(cards, 5, (station, cardDone) => {
     doc.pipe(fs.createWriteStream(pr(DEST_DIR, card.id + '.pdf')));
     cardDone();
   })
-  .catch(cardDone);
+  .catch((err) => {
+    cosole.error(err);
+    cardDone(err);
+  });
   i++;
 });
