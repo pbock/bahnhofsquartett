@@ -5,7 +5,7 @@ const pr = require('path').resolve;
 const fs = require('fs');
 const _ = require('lodash');
 
-const makePDF = require('./lib/card-generator');
+const pdf = require('./lib/card-generator')();
 
 const SRC_DIR = pr(__dirname, '../src');
 const DATA_DIR = pr(SRC_DIR, 'data');
@@ -81,7 +81,7 @@ while (cards.size < potentialCards.length * 4) {
 cards = Array.from(cards);
 
 let i = 0;
-async.eachLimit(cards, 5, (station, cardDone) => {
+async.eachLimit(cards, 1, (station, cardDone) => {
   console.log(station.name);
   let card = {
     name: station.name,
@@ -93,13 +93,13 @@ async.eachLimit(cards, 5, (station, cardDone) => {
     card.values.push({ name: category.name, value: format(category.find(station)) });
   });
 
-  makePDF(card).then(doc => {
-    doc.pipe(fs.createWriteStream(pr(DEST_DIR, card.id + '.pdf')));
-    cardDone();
-  })
+  pdf.add(card).then(cardDone)
   .catch((err) => {
-    cosole.error(err);
+    console.error(err);
     cardDone(err);
   });
   i++;
+}, function () {
+  pdf.doc.end();
+  pdf.doc.pipe(fs.createWriteStream(pr(DEST_DIR, 'output.pdf')));
 });
