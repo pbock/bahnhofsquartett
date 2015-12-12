@@ -21,6 +21,13 @@ function makePDF(card) {
   let i = 0;
   return {
     doc: doc,
+    end: () => {
+      if ((i + 1) % 9 !== 0) {
+        doc.addPage();
+        doc.rect(0, 0, 595, 842).fill(VERKEHRSROT);
+      }
+      return doc.end();
+    },
     add: (card) => new Promise((resolve, reject) => {
       let pageX = MARGIN + ((i / 3 | 0) % 3) * (WIDTH + MARGIN);
       let pageY = MARGIN + (i % 3) * (HEIGHT + MARGIN);

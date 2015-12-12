@@ -116,6 +116,6 @@ async.eachLimit(cards, 1, (station, cardDone) => {
   });
   i++;
 }, function () {
-  pdf.doc.end();
+  pdf.end();
   pdf.doc.pipe(fs.createWriteStream(pr(DEST_DIR, 'output.pdf')));
 });
