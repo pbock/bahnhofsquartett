@@ -1,7 +1,9 @@
 'use strict';
 
 const PDFDocument = require('pdfkit');
+const cheerio = require('cheerio');
 const pr = require('path').resolve;
+const fs = require('fs');
 
 const findImage = require('./find-image');
 
@@ -16,6 +18,36 @@ const LICHTGRAU = [ 0, 0, 0, 20 ];
 const WHITE = [ 0, 0, 0, 0 ];
 const BLACK = [ 0, 0, 0, 100 ];
 
+let $ = cheerio.load(fs.readFileSync(pr(__dirname, '../../src/backside.svg')));
+function drawBacks(doc) {
+  for (let i = 0; i < 9; i++) {
+    let pageX = 595 - (1 + (i / 3 | 0) % 3) * (WIDTH + MARGIN);
+    let pageY = MARGIN + (i % 3) * (HEIGHT + MARGIN);
+    drawBack(doc, pageX, pageY);
+  }
+}
+function drawBack(doc, pageX, pageY) {
+  doc.save().translate(pageX, pageY);
+  let first = true;
+  $('path').each((i, path) => {
+    let d = $(path).attr('d');
+    doc.path(d);
+    if (first) {
+      first = false;
+      doc.fill(VERKEHRSROT);
+    } else {
+      doc.strokeOpacity(0.5).lineWidth(0.5).stroke(WHITE);
+    }
+  });
+  $('line').each((i, line) => {
+    let $line = $(line);
+    doc.moveTo($line.attr('x1'), $line.attr('y1'))
+      .lineTo($line.attr('x2'), $line.attr('y2'))
+      .strokeOpacity(0.5).lineWidth(0.5).stroke(WHITE);
+  });
+  doc.restore();
+}
+
 function makePDF(card) {
   let doc = new PDFDocument({ size: 'a4', margin: 15 });
   let i = 0;
@@ -24,7 +56,7 @@ function makePDF(card) {
     end: () => {
       if ((i + 1) % 9 !== 0) {
         doc.addPage();
-        doc.rect(0, 0, 595, 842).fill(VERKEHRSROT);
+        drawBacks(doc);
       }
       return doc.end();
     },
@@ -114,7 +146,7 @@ function makePDF(card) {
         i++;
         if (i % 9 === 0) {
           doc.addPage();
-          doc.rect(0, 0, 595, 842).fill(VERKEHRSROT);
+          drawBacks(doc);
           doc.addPage();
         }
 
