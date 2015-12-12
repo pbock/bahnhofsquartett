@@ -1,5 +1,6 @@
 'use strict';
 
+const async = require('async');
 const pr = require('path').resolve;
 const fs = require('fs');
 const _ = require('lodash');
@@ -77,8 +78,10 @@ while (cards.size < potentialCards.length * 4) {
   cards.add(card);
 }
 
+cards = Array.from(cards);
+
 let i = 0;
-for (let station of cards) {
+async.eachLimit(cards, 5, (station, cardDone) => {
   console.log(station.name);
   let card = {
     name: station.name,
@@ -90,6 +93,10 @@ for (let station of cards) {
     card.values.push({ name: category.name, value: format(category.find(station)) });
   });
 
-  makePDF(card).then(doc => doc.pipe(fs.createWriteStream(pr(DEST_DIR, card.id + '.pdf'))));
+  makePDF(card).then(doc => {
+    doc.pipe(fs.createWriteStream(pr(DEST_DIR, card.id + '.pdf')));
+    cardDone();
+  })
+  .catch(cardDone);
   i++;
-}
+});
