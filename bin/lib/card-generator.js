@@ -5,6 +5,8 @@ const cheerio = require('cheerio');
 const pr = require('path').resolve;
 const fs = require('fs');
 
+const findImage = require('./find-image');
+
 const WIDTH = 170;
 const HEIGHT = 255;
 const MARGIN = 10;
@@ -37,41 +39,54 @@ function drawBackside(doc) {
 }
 
 function makePDF(card) {
-  let doc = new PDFDocument({ size: [ WIDTH, HEIGHT ], margin: MARGIN });
-  let y = 0;
-  doc.rect(0, 0, WIDTH, HEIGHT / 2.5);
-  y = HEIGHT / 2.2;
+  return new Promise((resolve, reject) => {
+    findImage(card).then(image => {
+      let doc = new PDFDocument({ size: [ WIDTH, HEIGHT ], margin: MARGIN });
+      let y = 0;
+      doc.rect(0, 0, WIDTH, HEIGHT / 2.5);
+      y = HEIGHT / 2.2;
 
-  doc.fill(LICHTGRAU);
+      if (image) {
+        doc.save()
+          .clip()
+          .image(image.image, 0, 0, {
+            width: WIDTH,
+          })
+          .restore();
+      } else {
+        doc.fill(LICHTGRAU);
+      }
 
-  doc.moveTo(0, HEIGHT / 2.5 + 4)
-    .lineTo(WIDTH, HEIGHT / 2.5 + 4)
-    .lineWidth(3)
-    .strokeOpacity(1)
-    .stroke(VERKEHRSROT);
+      doc.moveTo(0, HEIGHT / 2.5 + 4)
+        .lineTo(WIDTH, HEIGHT / 2.5 + 4)
+        .lineWidth(3)
+        .strokeOpacity(1)
+        .stroke(VERKEHRSROT);
 
-  doc.fill(BLACK);
-  doc.font(pr(__dirname, '../../src/fonts/FiraSans-Light.ttf'), 'Light');
-  doc.font(pr(__dirname, '../../src/fonts/FiraSans-Book.ttf'), 'Regular');
-  doc.fontSize(12);
-  doc.font('Light').fill(WHITE).text(card.id, MARGIN, MARGIN, { align: 'right' });
+      doc.fill(BLACK);
+      doc.font(pr(__dirname, '../../src/fonts/FiraSans-Light.ttf'), 'Light');
+      doc.font(pr(__dirname, '../../src/fonts/FiraSans-Book.ttf'), 'Regular');
+      doc.fontSize(12);
+      doc.font('Light').fill(WHITE).text(card.id, MARGIN, MARGIN, { align: 'right' });
 
-  doc.fontSize(9);
-  doc.font('Regular').fill(BLACK).text(card.name, MARGIN, y);
-  y += LINE_HEIGHT * 1.5;
+      doc.fontSize(9);
+      doc.font('Regular').fill(BLACK).text(card.name, MARGIN, y);
+      y += LINE_HEIGHT * 1.5;
 
-  doc.fontSize(8);
-  card.values.forEach(category => {
-    doc.font('Light').text(category.name, MARGIN, y, { continued: true });
-    doc.font('Regular').text(category.value, { align: 'right' });
-    y += LINE_HEIGHT;
+      doc.fontSize(8);
+      card.values.forEach(category => {
+        doc.font('Light').text(category.name, MARGIN, y, { continued: true });
+        doc.font('Regular').text(category.value, { align: 'right' });
+        y += LINE_HEIGHT;
+      });
+
+      doc.addPage();
+      drawBackside(doc);
+
+      doc.end();
+      resolve(doc);
+    }).catch(reject);
   });
-
-  doc.addPage();
-  drawBackside(doc);
-
-  doc.end();
-  return doc;
 }
 
 module.exports = makePDF;

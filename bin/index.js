@@ -26,7 +26,7 @@ let categories = [
   {
     name: 'Längster Bahnsteig',
     find: station => _(station.platforms).map('length').max(),
-    format: n => n.toFixed(1).replace('.', ',') + ' m',
+    format: n => n.toFixed(2).replace('.', ',') + ' m',
     reverse: true,
   },
   {
@@ -39,6 +39,29 @@ let categories = [
     name: 'Kategorie',
     find: _.property('category'),
   },
+  {
+    name: 'Anzahl der Aufzüge',
+    find: n => n.elevators.length,
+    reverse: true,
+  },
+  {
+    name: 'Ältester Aufzug',
+    find: n => _(n.elevators).map(e => +e.year).min(),
+    reverse: true,
+    format: n => n === Infinity ? '—' : n,
+  },
+  {
+    name: 'Neuester Aufzug',
+    find: n => _(n.elevators).map(e => +e.year).max(),
+    reverse: true,
+    format: n => n === -Infinity ? '—' : n,
+  },
+  {
+    name: 'Höchster Aufzugschacht',
+    find: n => _(n.elevators).map(e => +e.wellHeight).filter().max(),
+    reverse: true,
+    format: n => n === -Infinity ? '—' : n.toFixed(2).replace('.', ',') + ' m',
+  },
 ];
 
 let cards = new Set();
@@ -49,7 +72,7 @@ let potentialCards = categories.map(category => {
   return results.value();
 });
 
-while (cards.size < 32) {
+while (cards.size < potentialCards.length * 4) {
   let card = potentialCards[cards.size % potentialCards.length].shift();
   cards.add(card);
 }
@@ -67,6 +90,6 @@ for (let station of cards) {
     card.values.push({ name: category.name, value: format(category.find(station)) });
   });
 
-  makePDF(card).pipe(fs.createWriteStream(pr(DEST_DIR, card.name + '.pdf')));
+  makePDF(card).then(doc => doc.pipe(fs.createWriteStream(pr(DEST_DIR, card.id + '.pdf'))));
   i++;
 }
