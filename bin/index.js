@@ -74,7 +74,6 @@ let categories = [
 ];
 
 let cards = new Set();
-let cardsArray = [];
 
 let potentialCards = categories.map(category => {
   let filter = category.filter || (() => true);
@@ -86,22 +85,22 @@ let potentialCards = categories.map(category => {
 while (cards.size < potentialCards.length * 4) {
   let group = cards.size % potentialCards.length;
   let card = potentialCards[group].shift();
-  if (!cards.has(card)) {
-    cards.add(card);
-    if (!cardsArray[group]) cardsArray[group] = [];
-    cardsArray[group].push(card);
-    card.cardID = ALPHABET[group] + cardsArray[group].length;
-  }
+  cards.add(card);
 }
 
-cards = Array.from(cards);
+let jannowitz = _.findWhere(stations, { name: 'Jannowitzbrücke' });
+cards.add(jannowitz);
+cards.delete(_.findWhere(stations, { name: 'Anwanden' }));
+
+cards = _(Array.from(cards)).sortBy(s => s.state).value();
 
 let i = 0;
 async.eachLimit(cards, 1, (station, cardDone) => {
-  console.log(station.name);
+  let cardID = ALPHABET[i / 4 | 0] + (i % 4 + 1);
+  console.log(cardID, station.name);
   let card = {
     name: station.name,
-    id: station.cardID,
+    id: cardID,
     values: [],
   };
   categories.forEach(category => {
