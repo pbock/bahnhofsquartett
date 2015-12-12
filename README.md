@@ -10,6 +10,10 @@ Most of the code came to life between 11pm and 5am at #dbhackathon in December
 to customise it, the values on the cards are generated in `bin/index.js` and
 the drawing happens in `bin/lib/card-generator.js`.
 
+Code by [@pbock](https://twitter.com/pbock),
+with contributions from [@tbsprs](https://twitter.com/tbsprs) and
+[@ubahnverleih](https://twitter.com/ubahnverleih).
+
 ## Requirements
 
 node.js >= 5.0.0 (might work with >=4.0.0, but not tested)
