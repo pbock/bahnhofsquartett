@@ -3,6 +3,8 @@
 Bahnhofsquartett is an automatically-generated "Quartett" game based on
 open data from Deutsche Bahn and Wikimedia Commons.
 
+![Bahnhofsquartett](https://raw.github.com/pbock/bahnhofsquartett/master/src/Bahnhofsquartett.jpg)
+
 Most of the code came to life between 11pm and 5am at #dbhackathon in December
 2015, and it certainly looks the part. Still, if you're brave enough to want
 to customise it, the values on the cards are generated in `bin/index.js` and
