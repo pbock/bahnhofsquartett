@@ -10,6 +10,7 @@
   "author": "Philipp Bock <p@philippbock.de> (http://philippbock.de/)",
   "license": "MIT",
   "dependencies": {
+    "cheerio": "^0.19.0",
     "lodash": "^3.10.1",
     "pdfkit": "^0.7.1"
   }

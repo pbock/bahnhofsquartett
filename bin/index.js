@@ -26,11 +26,13 @@ let categories = [
   {
     name: 'Längster Bahnsteig',
     find: station => _(station.platforms).map('length').max(),
+    format: n => n.toFixed(1).replace('.', ',') + ' m',
     reverse: true,
   },
   {
     name: 'Höchster Bahnsteig',
     find: station => _(station.platforms).map('height').max(),
+    format: n => n.toFixed(2).replace('.', ',') + ' m',
     reverse: true,
   },
   {
@@ -61,7 +63,8 @@ for (let station of cards) {
     values: [],
   };
   categories.forEach(category => {
-    card.values.push({ name: category.name, value: category.find(station) });
+    let format = category.format || _.identity;
+    card.values.push({ name: category.name, value: format(category.find(station)) });
   });
 
   makePDF(card).pipe(fs.createWriteStream(pr(DEST_DIR, card.name + '.pdf')));
