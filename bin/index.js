@@ -11,6 +11,8 @@ const SRC_DIR = pr(__dirname, '../src');
 const DATA_DIR = pr(SRC_DIR, 'data');
 const DEST_DIR = pr(__dirname, '../dist');
 
+const ALPHABET = 'ABCDEFGHIJKMNOPQRSTUVWXYZ';
+
 try {
   fs.mkdirSync(DEST_DIR);
 } catch (e) {
@@ -47,35 +49,49 @@ let categories = [
   },
   {
     name: 'Ältester Aufzug',
-    find: n => _(n.elevators).map(e => +e.year).min(),
-    reverse: true,
+    find: n => _(n.elevators).map(e => +e.year).filter().min(),
+    filter: n => n.elevators.length,
     format: n => n === Infinity ? '—' : n,
   },
   {
-    name: 'Neuester Aufzug',
-    find: n => _(n.elevators).map(e => +e.year).max(),
+    name: 'Größte Aufzugskabine',
+    find: n => _(n.elevators).map(e => e.cabin.width * e.cabin.depth * e.cabin.height / 1e9).filter(n => n < 100).max(),
     reverse: true,
-    format: n => n === -Infinity ? '—' : n,
+    format: n => (n > 0) ? n.toFixed(1).replace('.', ',') + ' m³' : '—',
   },
   {
+    name: 'Anschluss an eine Fähre',
+    find: n => n.ferryNearby,
+    reverse: true,
+    format: n => n ? 'ja' : 'nein',
+  }
+  /*{
     name: 'Höchster Aufzugschacht',
     find: n => _(n.elevators).map(e => +e.wellHeight).filter().max(),
     reverse: true,
     format: n => n === -Infinity ? '—' : n.toFixed(2).replace('.', ',') + ' m',
-  },
+  },*/
 ];
 
 let cards = new Set();
+let cardsArray = [];
 
 let potentialCards = categories.map(category => {
-  let results = _(stations).sortBy(category.find);
+  let filter = category.filter || (() => true);
+  let results = _(stations).filter(filter).sortBy(category.find);
   if (category.reverse) results = results.reverse();
   return results.value();
 });
 
 while (cards.size < potentialCards.length * 4) {
-  let card = potentialCards[cards.size % potentialCards.length].shift();
-  cards.add(card);
+  let group = cards.size % potentialCards.length;
+  let card = potentialCards[group].shift();
+  if (!cards.has(card)) {
+    cards.add(card);
+    if (!cardsArray[group]) cardsArray[group] = [];
+    cardsArray[group].push(card);
+    card.cardID = ALPHABET[group] + cardsArray[group].length;
+  }
 }
 
 cards = Array.from(cards);
@@ -85,7 +101,7 @@ async.eachLimit(cards, 1, (station, cardDone) => {
   console.log(station.name);
   let card = {
     name: station.name,
-    id: 'ABCDEFGH'[i / 4 | 0] + (i % 4 + 1),
+    id: station.cardID,
     values: [],
   };
   categories.forEach(category => {
