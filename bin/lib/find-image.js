@@ -1,5 +1,6 @@
 'use strict';
 
+const sizeOf = require('image-size');
 const request = require('request');
 const cheerio = require('cheerio');
 const YAML = require('js-yaml');
@@ -31,11 +32,16 @@ function findImage(station) {
       let imageBuffer = fs.readFileSync(imagePath);
       let metadataBuffer = fs.readFileSync(metadataPath);
       if (imageBuffer && metadataBuffer) {
-        resolve({ image: imageBuffer, metadata: JSON.parse(metadataBuffer) });
+        resolve({
+          image: imageBuffer,
+          metadata: JSON.parse(metadataBuffer),
+          dimensions: sizeOf(imageBuffer),
+        });
         return;
       }
     } catch (e) {
       if (e.code !== 'ENOENT') return reject(e);
+      console.log('Image not found in cache');
     }
 
     request(url, function (error, response, body) {
@@ -54,16 +60,19 @@ function findImage(station) {
       metadata.url = url;
       fs.writeFileSync(metadataPath, JSON.stringify(metadata));
 
+      console.log('Fetching image from %s', url);
       let imageUrl = $('.fullImageLink a').attr('href');
       request(imageUrl, { encoding: null }, function (error, res, buffer) {
         if (error || res.statusCode !== 200) {
           return reject(error);
         }
+        console.log('Fetched image from %s');
         let imageBuffer = buffer;
         fs.writeFileSync(imagePath, buffer);
         resolve({
           image: imageBuffer,
           metadata: metadata,
+          dimensions: sizeOf(imageBuffer),
         });
       });
     });

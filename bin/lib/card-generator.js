@@ -46,13 +46,33 @@ function makePDF(card) {
       doc.rect(0, 0, WIDTH, HEIGHT / 2.5);
       y = HEIGHT / 2.2;
 
+      // Declare fonts
+      doc.font(pr(__dirname, '../../src/fonts/FiraSans-Light.ttf'), 'Light');
+      doc.font(pr(__dirname, '../../src/fonts/FiraSans-Book.ttf'), 'Regular');
+
+      let placeholderAspectRatio = WIDTH / (HEIGHT / 2.5);
+
       if (image) {
+        // Find out which dimension we need to pass to PDFKit to make sure
+        // that the image covers its placeholder.
+        let imageSize;
+        let imageAspectRatio = image.dimensions.width / image.dimensions.height;
+        if (imageAspectRatio > placeholderAspectRatio) {
+          imageSize = { height: HEIGHT / 2.5 };
+        } else {
+          imageSize = { width: WIDTH };
+        }
         doc.save()
           .clip()
-          .image(image.image, 0, 0, {
-            width: WIDTH,
-          })
+          .image(image.image, 0, 0, imageSize)
           .restore();
+
+        doc.fontSize(4)
+          .fill(WHITE)
+          .text(
+            `${image.metadata.Author} (${image.metadata.url.replace(/https?:\/\//, '')})`,
+            2,
+            HEIGHT / 2.5 - 6);
       } else {
         doc.fill(LICHTGRAU);
       }
@@ -64,8 +84,6 @@ function makePDF(card) {
         .stroke(VERKEHRSROT);
 
       doc.fill(BLACK);
-      doc.font(pr(__dirname, '../../src/fonts/FiraSans-Light.ttf'), 'Light');
-      doc.font(pr(__dirname, '../../src/fonts/FiraSans-Book.ttf'), 'Regular');
       doc.fontSize(12);
       doc.font('Light').fill(WHITE).text(card.id, MARGIN, MARGIN, { align: 'right' });
 
