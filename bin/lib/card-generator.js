@@ -51,12 +51,13 @@ function makePDF(card) {
             .image(image.image, pageX + 0, pageY + 0, imageSize)
             .restore();
 
-          doc.fontSize(4)
+          // Attribution
+          doc.fontSize(5)
             .fill(WHITE)
             .text(
-              `${image.metadata.Author} (${image.metadata.url.replace(/https?:\/\//, '')})`,
-              pageX + 2,
-              pageY + HEIGHT / 2.5 - 6);
+              image.metadata.Author || image.metadata.url,
+              pageX + MARGIN / 2 + 2,
+              pageY + HEIGHT / 2.5 - 8);
         } else {
           doc.fill(LICHTGRAU);
         }
