@@ -23,6 +23,8 @@ function findImage(station) {
     let name = station.name;
     let url = images[name];
     if (!url) return resolve(null);
+    url = url.replace(/uselang=..&?/, 'uselang=en');
+    console.log(url);
 
     let metadataPath = pr(CACHE_DIR, slug(name) + '.json');
     let imagePath = pr(CACHE_DIR, slug(name) + '.jpg');
