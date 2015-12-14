@@ -10,7 +10,7 @@ Most of the code came to life between 11pm and 5am at #dbhackathon in December
 to customise it, the values on the cards are generated in `bin/index.js` and
 the drawing happens in `bin/lib/card-generator.js`.
 
-Code by [@bockp](https://twitter.com/bockph),
+Code by [@bockph](https://twitter.com/bockph),
 with contributions from [@tbsprs](https://twitter.com/tbsprs) and
 [@ubahnverleih](https://twitter.com/ubahnverleih).
 
