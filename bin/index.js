@@ -107,7 +107,18 @@ async.eachLimit(cards, 1, (station, cardDone) => {
   let card = {
     name: station.name,
     id: cardID,
-    values: [],
+    values: [
+      { name: 'Zughalte pro Tag', value: 'unbekannt' },
+      { name: 'Parkplatzkapazität', value: 'unbekannt' },
+      { name: 'Toilettengebühr', value: '?,?? €' },
+      { name: 'Fahrzeit nach Berlin', value: 'unbekannt' },
+      { name: 'Nahverkehrsanbindung', value: 'unbekannt' },
+      { name: 'Längster Zug-Aufenthalt', value: '? Minuten' },
+      { name: 'Fernverkehrsanteil', value: '? %' },
+      { name: 'Anzahl der Schließfächer', value: 'unbekannt' },
+      { name: 'Anzahl der Bahnunternehmen', value: 'unbekannt' },
+      { name: 'Fahrgäste pro Tag', value: 'unbekannt' },
+    ],
   };
   categories.forEach(category => {
     let format = category.format || _.identity;
