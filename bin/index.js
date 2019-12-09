@@ -28,13 +28,13 @@ let categories = [
   },
   {
     name: 'Längster Bahnsteig',
-    find: station => _(station.platforms).map('length').max(),
+    find: station => _(station.platforms).map('length').max() || 0,
     format: n => n.toFixed(2).replace('.', ',') + ' m',
     reverse: true,
   },
   {
     name: 'Höchster Bahnsteig',
-    find: station => _(station.platforms).map('height').max(),
+    find: station => _(station.platforms).map('height').max() || 0,
     format: n => n.toFixed(2).replace('.', ',') + ' m',
     reverse: true,
   },
@@ -51,7 +51,7 @@ let categories = [
     name: 'Ältester Aufzug',
     find: n => _(n.elevators).map(e => +e.year).filter().min(),
     filter: n => n.elevators.length,
-    format: n => n === Infinity ? '—' : n,
+    format: n => (n === Infinity || n === undefined) ? '—' : n,
   },
   {
     name: 'Größte Aufzugskabine',
@@ -93,10 +93,6 @@ while (cards.size < potentialCards.length * 4) {
   let card = potentialCards[group].shift();
   cards.add(card);
 }
-
-let jannowitz = _.findWhere(stations, { name: 'Jannowitzbrücke' });
-cards.add(jannowitz);
-cards.delete(_.findWhere(stations, { name: 'Anwanden' }));
 
 cards = _(Array.from(cards)).sortBy(s => s.state).value();
 
