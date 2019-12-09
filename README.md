@@ -12,7 +12,8 @@ the drawing happens in `bin/lib/card-generator.js`.
 
 Code by [@bockph](https://twitter.com/bockph),
 with contributions from [@tbsprs](https://twitter.com/tbsprs) and
-[@ubahnverleih](https://twitter.com/ubahnverleih).
+[@ubahnverleih](https://twitter.com/ubahnverleih) and
+[Falco Nogatz](https://github.com/fnogatz).
 
 ## Requirements
 
